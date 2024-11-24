@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "GooderReads",
+  "version": "1.0",
+  "description": "Don't let bad reviews rain on your parade. This extension hides all 1, 2, and 3 star reviews, and the average rating. This let's authors focus on what readers love, and what they love to do: write. Designed by the spouse of an author, for the peace of mind of writers everywhere.",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["https://*.goodreads.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://*.goodreads.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["https://*.goodreads.com/*"],
+      "css": ["content.css"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  }
+}

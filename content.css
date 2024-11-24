@@ -1,0 +1,41 @@
+/* Remove * out 5 ratings */
+article:has(div > span[aria-label="Rating 1 out of 5"]) {
+  display: none !important;
+}
+
+article:has(div > span[aria-label="Rating 2 out of 5"]) {
+  display: none !important;
+}
+
+/* article:has(div > span[aria-label="Rating 3 out of 5"]) {
+  display: none !important;
+} */
+
+.article-hidden {
+  display: none !important;
+}
+
+/* Remove 1 - 3 star filter */
+div[aria-label="1 star"] {
+  display: none;
+}
+
+div[aria-label="2 stars"] {
+  display: none;
+}
+
+div[aria-label="3 stars"] {
+  display: none;
+}
+
+/* Remove average rating*/
+div.RatingStatistics__column:has(
+    span[class="RatingStars RatingStars__medium"]
+  ) {
+  display: none;
+}
+
+/* Remove rating from search result*/
+span.minirating {
+  display: none;
+}

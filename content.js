@@ -1,42 +1,72 @@
-console.log("Initial document.readyState:", document.readyState);
+waitForArticles();
+observeAndReapply();
 
+// Listen for messages from the popup
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  threeStartReviews = document.getElementsByClassName("three-star-reviews");
+
+  if (message.action === "show3StarRatings") {
+    const styleId = "dynamic-hide-css";
+    const existingStyle = document.getElementById(styleId);
+    if (existingStyle) {
+      existingStyle.remove();
+      sendResponse({ status: "CSS removed" });
+    } else {
+      const style = document.createElement("style");
+      style.id = styleId;
+      style.textContent = `
+      div.RatingsHistogram > div[data-testid="ratingBar-3"] {
+        display: grid !important;
+      }
+        
+      article.three-star-reviews {
+        display: grid !important;
+      }
+        
+      div[aria-label="3 stars"] {
+        display: grid !important;
+      }`;
+      document.head.appendChild(style);
+    }
+  }
+});
+
+// Send message to close popup when page is refreshed
+window.addEventListener("beforeunload", () => {
+  browser.runtime.sendMessage({ action: "closePopup" });
+});
+
+// ---- helper functions ----
+
+// Waits for articles to be loaded and processes them.
+// If they are not loaded yet this function is started again after 500 ms
+// As soon as observeMutations is started, it takes over to process any changes in articles
+// from there on
 function waitForArticles() {
   const articles = document.querySelectorAll("article");
   if (articles.length > 0) {
-    console.log("Articles found:", articles.length);
     processArticles();
     observeMutations(); // Start observing mutations after initial load
   } else {
-    console.log("No articles yet, retrying...");
-    setTimeout(waitForArticles, 500); // Retry every 500ms
+    setTimeout(waitForArticles, 500);
   }
 }
 
-// Observe for dynamic changes in the DOM
+// Observe for dynamic changes in the DOM (e.g. add or remove nodes)
 function observeMutations() {
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       // Check added nodes for articles
       mutation.addedNodes.forEach((node) => {
         if (node.nodeType === 1 && node.tagName === "ARTICLE") {
-          console.log("New or rehydrated article found:", node);
           processArticle(node);
         }
       });
-      // TODO
-      // mutation.removedNodes.forEach((node) => {
-      //   console.log("Removed node:", node);
-      // });
-
-      // Check if existing articles are re-rendered or modified
+      // Check if existing articles are re-rendered or modified (e.g. adding/removing attributes)
       if (
         mutation.type === "attributes" &&
         mutation.target.tagName === "ARTICLE"
       ) {
-        console.log(
-          "Article attributes changed or rehydrated:",
-          mutation.target
-        );
         processArticle(mutation.target);
       }
     });
@@ -46,34 +76,30 @@ function observeMutations() {
   observer.observe(document.body, {
     childList: true,
     subtree: true,
-    attributes: true, // Observe attribute changes (React can modify them)
+    attributes: true, // Observe attribute changes (React/Next.js can modify them)
   });
 }
 
+// Find all article tags and and run processArticle
 function processArticles() {
   document.querySelectorAll("article").forEach((article) => {
     processArticle(article);
   });
 }
 
+// If already processed -> return
+// if Rating 3 out of 5 -> add classes and the data-processed attribute
 function processArticle(article) {
   if (article.getAttribute("data-processed")) return;
-
-  // console.log("Processing article:", article);
-
-  // TODO: Add || article.querySelector('section[class="ReviewCard_row"] > div[class="ShelfStatus"] > b[innerText="read"]')
-  ("article:nth-child(1) > section:nth-child(2) > section:nth-child(1) > div:nth-child(1) > b:nth-child(1)");
 
   if (
     article.querySelector(
       'section > section > div > span[aria-label="Rating 3 out of 5"]'
     )
   ) {
-    console.log("Article is 3 out of 5");
     article.classList.add("article-hidden");
     article.classList.add("three-star-reviews");
     article.setAttribute("data-processed", "true");
-    console.log("article after change: ", article);
   }
 }
 
@@ -85,7 +111,6 @@ function reapplyClasses() {
       )
     ) {
       if (!article.classList.contains("article-hidden")) {
-        console.log("Reapplying classes to article:", article);
         article.classList.add("article-hidden", "three-star-reviews");
       }
     }
@@ -102,53 +127,3 @@ function observeAndReapply() {
   // Periodically reapply classes
   setInterval(reapplyClasses, 500);
 }
-
-waitForArticles();
-observeAndReapply();
-
-// Listen for messages from the popup
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log("message received: ", message);
-  threeStartReviews = document.getElementsByClassName("three-star-reviews");
-
-  if (message.action === "show3StarRatings") {
-    console.log("right action");
-
-    const styleId = "dynamic-hide-css";
-    const existingStyle = document.getElementById(styleId);
-
-    // console.log("existing style: ", existingStyle);
-    if (existingStyle) {
-      existingStyle.remove();
-      console.log("CSS removed");
-      sendResponse({ status: "CSS removed" });
-    } else {
-      console.log("doesn't exists yet");
-      const style = document.createElement("style");
-      style.id = styleId;
-
-      style.textContent = `
-      div.RatingsHistogram > div[data-testid="ratingBar-3"]
-      {
-        display: grid !important;
-      }
-        
-      article.three-star-reviews {
-        display: grid !important;
-        }
-        
-      div[aria-label="3 stars"] {
-        display: grid !important;
-      }
-      `;
-      document.head.appendChild(style);
-      console.log("CSS added");
-
-      sendResponse({ status: "CSS added" });
-    }
-  }
-});
-
-window.addEventListener("beforeunload", () => {
-  browser.runtime.sendMessage({ action: "closePopup" });
-});

@@ -23,9 +23,10 @@ function observeMutations() {
           processArticle(node);
         }
       });
-      mutation.removedNodes.forEach((node) => {
-        console.log("Removed node:", node);
-      });
+      // TODO
+      // mutation.removedNodes.forEach((node) => {
+      //   console.log("Removed node:", node);
+      // });
 
       // Check if existing articles are re-rendered or modified
       if (
@@ -58,7 +59,10 @@ function processArticles() {
 function processArticle(article) {
   if (article.getAttribute("data-processed")) return;
 
-  console.log("Processing article:", article);
+  // console.log("Processing article:", article);
+
+  // TODO: Add || article.querySelector('section[class="ReviewCard_row"] > div[class="ShelfStatus"] > b[innerText="read"]')
+  ("article:nth-child(1) > section:nth-child(2) > section:nth-child(1) > div:nth-child(1) > b:nth-child(1)");
 
   if (
     article.querySelector(
@@ -113,7 +117,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const styleId = "dynamic-hide-css";
     const existingStyle = document.getElementById(styleId);
 
-    console.log("existing style: ", existingStyle);
+    // console.log("existing style: ", existingStyle);
     if (existingStyle) {
       existingStyle.remove();
       console.log("CSS removed");
@@ -130,7 +134,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }
         
       article.three-star-reviews {
-          display: grid !important;
+        display: grid !important;
+        }
+        
+      div[aria-label="3 stars"] {
+        display: grid !important;
       }
       `;
       document.head.appendChild(style);
@@ -139,4 +147,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ status: "CSS added" });
     }
   }
+});
+
+window.addEventListener("beforeunload", () => {
+  browser.runtime.sendMessage({ action: "closePopup" });
 });

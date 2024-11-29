@@ -7,10 +7,7 @@ article:has(div > span[aria-label="Rating 2 out of 5"]) {
   display: none !important;
 }
 
-/* article:has(div > span[aria-label="Rating 3 out of 5"]) {
-  display: none !important;
-} */
-
+/* class used to hide everything that needs to be activated/deactivated by the popup button*/
 .article-hidden {
   display: none !important;
 }
@@ -38,4 +35,9 @@ div.RatingStatistics__column:has(
 /* Remove rating from search result*/
 span.minirating {
   display: none;
+}
+
+/* Remove reviews without star rating */
+article:has(section > section.ReviewCard__row > div > b) {
+  display: none !important;
 }

@@ -1,7 +1,8 @@
 waitForArticles();
 observeAndReapply();
 
-// Listen for messages from the popup
+// Listen for messages from the popup and add style tag in
+// order to show 3 star ratings and the 3 star rating filter bar
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   threeStartReviews = document.getElementsByClassName("three-star-reviews");
 
@@ -15,10 +16,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const style = document.createElement("style");
       style.id = styleId;
       style.textContent = `
+      /* Show 3 star rating bar */
       div.RatingsHistogram > div[data-testid="ratingBar-3"] {
         display: grid !important;
-      }
+        }
         
+      /* Show 3 star ratings */
       article.three-star-reviews {
         display: grid !important;
       }
@@ -36,19 +39,15 @@ window.addEventListener("beforeunload", () => {
   browser.runtime.sendMessage({ action: "closePopup" });
 });
 
+// Check for hard refresh of the site and set "show3StarReviews"
+// extension storage entry to false
 const [navEntry] = performance.getEntriesByType("navigation");
-
 if (navEntry.type === "reload") {
-  console.log("Hard refresh detected (CMD+R or browser refresh button).");
   chrome.storage.local.set({ show3StarReviews: false }, () => {
     if (chrome.runtime.lastError) {
       console.error("Error:", chrome.runtime.lastError);
-    } else {
-      console.log("Reset button caption");
     }
   });
-} else {
-  console.log("Other navigation type:", navEntry.type);
 }
 
 // ---- helper functions ----
@@ -95,7 +94,7 @@ function observeMutations() {
   });
 }
 
-// Find all article tags and and run processArticle
+// Find all article tags and run processArticle
 function processArticles() {
   document.querySelectorAll("article").forEach((article) => {
     processArticle(article);
@@ -103,7 +102,7 @@ function processArticles() {
 }
 
 // If already processed -> return
-// if Rating 3 out of 5 -> add classes and the data-processed attribute
+// If Rating 3 out of 5 -> add classes and the data-processed attribute
 function processArticle(article) {
   if (article.getAttribute("data-processed")) return;
 

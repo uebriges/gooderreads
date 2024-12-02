@@ -19,10 +19,6 @@
   "action": {
     "default_popup": "popup.html"
   },
-  "background": {
-    "type": "module",
-    "scripts": ["./helpers/background.js"]
-  },
   "web_accessible_resources": [
     {
       "resources": ["*"],

@@ -36,6 +36,21 @@ window.addEventListener("beforeunload", () => {
   browser.runtime.sendMessage({ action: "closePopup" });
 });
 
+const [navEntry] = performance.getEntriesByType("navigation");
+
+if (navEntry.type === "reload") {
+  console.log("Hard refresh detected (CMD+R or browser refresh button).");
+  chrome.storage.local.set({ show3StarReviews: false }, () => {
+    if (chrome.runtime.lastError) {
+      console.error("Error:", chrome.runtime.lastError);
+    } else {
+      console.log("Reset button caption");
+    }
+  });
+} else {
+  console.log("Other navigation type:", navEntry.type);
+}
+
 // ---- helper functions ----
 
 // Waits for articles to be loaded and processes them.

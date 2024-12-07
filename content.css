@@ -8,7 +8,11 @@ article:has(div > span[aria-label="Rating 2 out of 5"]) {
 }
 
 /* class used to hide everything that needs to be activated/deactivated by the popup button*/
-.article-hidden {
+.article-hidden.firefox {
+  display: none !important;
+}
+
+article.article-hidden.chrome {
   display: none !important;
 }
 

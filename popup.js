@@ -49,7 +49,8 @@ function setButtonCaption(value, caption) {
 }
 
 // ONLY FOR FIREFOX NECESSARY
-// Close popup if website is refreshed
+// Close popup if website is refreshed and
+// message is sent from content.js
 if (typeof browser !== "undefined") {
   chrome.runtime.onMessage.addListener((message) => {
     if (message.action === "closePopup") {

@@ -16,19 +16,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const style = document.createElement("style");
       style.id = styleId;
       style.textContent = `
-      /* Show 3 star rating bar */
-      div.RatingsHistogram > div[data-testid="ratingBar-3"] {
-        display: grid !important;
-        }
+        /* Show 3 star rating bar */
+        div[aria-label="3 stars"] {
+          display: grid !important;
+        } 
         
-      /* Show 3 star ratings */
-      article.three-star-reviews {
-        display: grid !important;
-      }
-        
-      div[aria-label="3 stars"] {
-        display: grid !important;
-      }`;
+        /* Show 3 star ratings */
+        `;
+      style.textContent +=
+        getBrowser() === browserVendor.FIREFOX
+          ? `
+            article.three-star-reviews.firefox {
+              display: grid !important;
+            }`
+          : `        
+            article.three-star-reviews.chrome {
+              display: grid !important;
+            }`;
       document.head.appendChild(style);
     }
   }
@@ -58,6 +62,19 @@ if (navEntry.type === "reload") {
 }
 
 // ---- helper functions ----
+
+const browserVendor = {
+  CHROME: "chrome",
+  FIREFOX: "firefox",
+};
+
+function getBrowser() {
+  if (typeof browser !== "undefined") {
+    return browserVendor.FIREFOX;
+  } else if (typeof chrome !== "undefined") {
+    return browserVendor.CHROME;
+  }
+}
 
 // Waits for articles to be loaded and processes them.
 // If they are not loaded yet this function is started again after 500 ms
@@ -118,7 +135,9 @@ function processArticle(article) {
       'section > section > div > span[aria-label="Rating 3 out of 5"]'
     )
   ) {
-    article.classList.add("article-hidden");
+    getBrowser() === browserVendor.FIREFOX
+      ? article.classList.add("article-hidden", "firefox")
+      : article.classList.add("article-hidden", "chrome");
     article.classList.add("three-star-reviews");
     article.setAttribute("data-processed", "true");
   }
@@ -132,7 +151,17 @@ function reapplyClasses() {
       )
     ) {
       if (!article.classList.contains("article-hidden")) {
-        article.classList.add("article-hidden", "three-star-reviews");
+        getBrowser() === browserVendor.FIREFOX
+          ? article.classList.add(
+              "article-hidden",
+              "firefox",
+              "three-star-reviews"
+            )
+          : article.classList.add(
+              "article-hidden",
+              "chrome",
+              "three-star-reviews"
+            );
       }
     }
   });

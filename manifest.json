@@ -1,5 +1,5 @@
 {
-  "manifest_version": 3.0,
+  "manifest_version": 3,
   "name": "GooderReads",
   "version": "1.0",
   "description": "Don't let bad reviews rain on your parade. This extension hides all 1, 2, and 3 star reviews, and the average rating. This let's authors focus on what readers love, and what they love to do: write. Designed by the spouse of an author, for the peace of mind of writers everywhere.",

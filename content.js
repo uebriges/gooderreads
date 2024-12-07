@@ -34,10 +34,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
+// ONLY FOR FIREFOX NECESSARY
 // Send message to close popup when page is refreshed
-window.addEventListener("beforeunload", () => {
-  browser.runtime.sendMessage({ action: "closePopup" });
-});
+if (typeof browser !== "undefined") {
+  window.addEventListener("beforeunload", () => {
+    chrome.runtime.sendMessage({ action: "closePopup" }, () => {
+      if (chrome.runtime.lastError) {
+        console.error("Error:", chrome.runtime.lastError.message);
+      }
+    });
+  });
+}
 
 // Check for hard refresh of the site and set "show3StarReviews"
 // extension storage entry to false

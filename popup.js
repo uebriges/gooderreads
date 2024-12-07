@@ -48,10 +48,13 @@ function setButtonCaption(value, caption) {
   });
 }
 
+// ONLY FOR FIREFOX NECESSARY
 // Close popup if website is refreshed
-browser.runtime.onMessage.addListener((message) => {
-  if (message.action === "closePopup") {
-    console.log("closing popup");
-    window.close();
-  }
-});
+if (typeof browser !== "undefined") {
+  chrome.runtime.onMessage.addListener((message) => {
+    if (message.action === "closePopup") {
+      console.log("closing popup");
+      window.close();
+    }
+  });
+}

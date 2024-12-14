@@ -30,26 +30,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       existingStyle.remove();
       sendResponse({ status: "CSS removed" });
     } else {
-      const style = document.createElement("style");
-      style.id = styleId;
-      style.textContent = `
-        /* Show 3 star rating bar */
-        div[aria-label="3 stars"] {
-          display: grid !important;
-        }
-        /* Show 3 star ratings */
-        `;
-      style.textContent +=
-        getBrowser() === browserVendor.FIREFOX
-          ? `
-            article.three-star-reviews.firefox {
-              display: grid !important;
-            }`
-          : `
-            article.three-star-reviews.chrome {
-              display: grid !important;
-            }`;
-      document.head.appendChild(style);
+      addStyleTag(styleId);
     }
   }
 });
@@ -80,33 +61,37 @@ if (navEntry.type === "reload") {
 } else if (navEntry.type === "navigate") {
   const styleId = "dynamic-hide-css";
   chrome.storage.local.get(storageKey3StarReviews, (result) => {
-    console.log("result: ", typeof result.show3StarReviews);
+    console.log("result: ", result.show3StarReviews);
     if (result.show3StarReviews) {
-      const style = document.createElement("style");
-      style.id = styleId;
-      style.textContent = `
-          /* Show 3 star rating bar */
-          div[aria-label="3 stars"] {
-            display: grid !important;
-          }
-          /* Show 3 star ratings */
-          `;
-      style.textContent +=
-        getBrowser() === browserVendor.FIREFOX
-          ? `
-              article.three-star-reviews.firefox {
-                display: grid !important;
-              }`
-          : `
-              article.three-star-reviews.chrome {
-                display: grid !important;
-              }`;
-      document.head.appendChild(style);
+      addStyleTag(styleId);
     }
   });
 }
 
 // ---- helper functions ----
+
+function addStyleTag(styleId) {
+  const style = document.createElement("style");
+  style.id = styleId;
+  style.textContent = `
+        /* Show 3 star rating bar */
+        div[aria-label="3 stars"] {
+          display: grid !important;
+        }
+        /* Show 3 star ratings */
+        `;
+  style.textContent +=
+    getBrowser() === browserVendor.FIREFOX
+      ? `
+            article.three-star-reviews.firefox {
+              display: grid !important;
+            }`
+      : `
+            article.three-star-reviews.chrome {
+              display: grid !important;
+            }`;
+  document.head.appendChild(style);
+}
 
 // Waits for articles to be loaded and processes them.
 // If they are not loaded yet this function is started again after 500 ms

@@ -1,9 +1,26 @@
+const storageKey3StarReviews = "show3StarReviews";
+
+const browserVendor = {
+  CHROME: "chrome",
+  FIREFOX: "firefox",
+};
+
+console.log("load content.js");
 waitForArticles();
 observeAndReapply();
+
+function getBrowser() {
+  if (typeof browser !== "undefined") {
+    return browserVendor.FIREFOX;
+  } else if (typeof chrome !== "undefined") {
+    return browserVendor.CHROME;
+  }
+}
 
 // Listen for messages from the popup and add style tag in
 // order to show 3 star ratings and the 3 star rating filter bar
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log("add listener in content.js");
   threeStartReviews = document.getElementsByClassName("three-star-reviews");
 
   if (message.action === "show3StarRatings") {
@@ -19,8 +36,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         /* Show 3 star rating bar */
         div[aria-label="3 stars"] {
           display: grid !important;
-        } 
-        
+        }
         /* Show 3 star ratings */
         `;
       style.textContent +=
@@ -29,7 +45,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             article.three-star-reviews.firefox {
               display: grid !important;
             }`
-          : `        
+          : `
             article.three-star-reviews.chrome {
               display: grid !important;
             }`;
@@ -53,28 +69,44 @@ if (typeof browser !== "undefined") {
 // Check for hard refresh of the site and set "show3StarReviews"
 // extension storage entry to false
 const [navEntry] = performance.getEntriesByType("navigation");
+console.log("navigation: ", navEntry.type);
 if (navEntry.type === "reload") {
+  console.log("set local storage");
   chrome.storage.local.set({ show3StarReviews: false }, () => {
     if (chrome.runtime.lastError) {
       console.error("Error:", chrome.runtime.lastError);
     }
   });
+} else if (navEntry.type === "navigate") {
+  const styleId = "dynamic-hide-css";
+  chrome.storage.local.get(storageKey3StarReviews, (result) => {
+    console.log("result: ", typeof result.show3StarReviews);
+    if (result.show3StarReviews) {
+      const style = document.createElement("style");
+      style.id = styleId;
+      style.textContent = `
+          /* Show 3 star rating bar */
+          div[aria-label="3 stars"] {
+            display: grid !important;
+          }
+          /* Show 3 star ratings */
+          `;
+      style.textContent +=
+        getBrowser() === browserVendor.FIREFOX
+          ? `
+              article.three-star-reviews.firefox {
+                display: grid !important;
+              }`
+          : `
+              article.three-star-reviews.chrome {
+                display: grid !important;
+              }`;
+      document.head.appendChild(style);
+    }
+  });
 }
 
 // ---- helper functions ----
-
-const browserVendor = {
-  CHROME: "chrome",
-  FIREFOX: "firefox",
-};
-
-function getBrowser() {
-  if (typeof browser !== "undefined") {
-    return browserVendor.FIREFOX;
-  } else if (typeof chrome !== "undefined") {
-    return browserVendor.CHROME;
-  }
-}
 
 // Waits for articles to be loaded and processes them.
 // If they are not loaded yet this function is started again after 500 ms

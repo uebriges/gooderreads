@@ -1,10 +1,11 @@
+console.log("load popup.js");
 const button = document.querySelector("#toggleCSS");
 const buttonCaptionShow = "Show 3 star ratings";
 const buttonCaptionHide = "Hide 3 star ratings";
 const storageKey3StarReviews = "show3StarReviews";
 
 chrome.storage.local.get(storageKey3StarReviews, (result) => {
-  console.log("inital value: ", result.show3StarReviews);
+  console.log("initial value: ", result.show3StarReviews);
   if (result.show3StarReviews === undefined) {
     setButtonCaption(false, buttonCaptionShow);
   } else if (result.show3StarReviews === true) {
@@ -19,7 +20,6 @@ document.getElementById("toggleCSS").addEventListener("click", (button) => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, { action: "show3StarRatings" });
   });
-
   updateButtonCaptionOnClick();
 });
 

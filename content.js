@@ -63,7 +63,7 @@ if (navEntry.type === "reload") {
   });
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+if (document.readyState !== "loading") {
   const observer = new MutationObserver(function (mutationsList, observer) {
     observer.disconnect();
     removePercentageFromRatingFilter();
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   observer.observe(document.body, { childList: true, subtree: true });
-});
+}
 
 // ---- helper functions ----
 function removePercentageFromRatingFilter() {

@@ -16,7 +16,6 @@ chrome.storage.local.get(storageKey3StarReviews, (result) => {
 });
 
 document.getElementById("toggleCSS").addEventListener("click", (button) => {
-  console.log("event listener click");
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, { action: "show3StarRatings" });
   });

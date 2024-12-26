@@ -49,3 +49,8 @@ span.minirating {
 article:has(section > section.ReviewCard__row > div > b) {
   display: none !important;
 }
+
+/* Remove community rating box at the bottom of the list of reviews */
+.CommunityShelvingSignalList {
+  display: none !important;
+}

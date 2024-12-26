@@ -5,7 +5,6 @@ const browserVendor = {
   FIREFOX: "firefox",
 };
 
-console.log("load content.js");
 waitForArticles();
 observeAndReapply();
 
@@ -20,7 +19,6 @@ function getBrowser() {
 // Listen for messages from the popup and add style tag in
 // order to show 3 star ratings and the 3 star rating filter bar
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log("add listener in content.js");
   threeStartReviews = document.getElementsByClassName("three-star-reviews");
 
   if (message.action === "show3StarRatings") {
@@ -50,9 +48,7 @@ if (typeof browser !== "undefined") {
 // Check for hard refresh of the site and set "show3StarReviews"
 // extension storage entry to false
 const [navEntry] = performance.getEntriesByType("navigation");
-console.log("navigation: ", navEntry.type);
 if (navEntry.type === "reload") {
-  console.log("set local storage");
   chrome.storage.local.set({ show3StarReviews: false }, () => {
     if (chrome.runtime.lastError) {
       console.error("Error:", chrome.runtime.lastError);
@@ -61,15 +57,33 @@ if (navEntry.type === "reload") {
 } else if (navEntry.type === "navigate") {
   const styleId = "dynamic-hide-css";
   chrome.storage.local.get(storageKey3StarReviews, (result) => {
-    console.log("result: ", result.show3StarReviews);
     if (result.show3StarReviews) {
       addStyleTag(styleId);
     }
   });
 }
 
-// ---- helper functions ----
+document.addEventListener("DOMContentLoaded", function () {
+  const observer = new MutationObserver(function (mutationsList, observer) {
+    observer.disconnect();
+    removePercentageFromRatingFilter();
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
 
+  observer.observe(document.body, { childList: true, subtree: true });
+});
+
+// ---- helper functions ----
+function removePercentageFromRatingFilter() {
+  const labelsList = document.querySelectorAll(".RatingsHistogram__labelTotal");
+  const regex = /^(\d[\d,]*)(?:\s*\(.*?\))?$/;
+  labelsList.forEach((label) => {
+    label.innerHTML = label.innerHTML.match(regex)[1];
+  });
+}
+
+// Adds a style tag to the head tag
+// to show 3 star ratings and the according filter bar
 function addStyleTag(styleId) {
   const style = document.createElement("style");
   style.id = styleId;
@@ -109,6 +123,12 @@ function waitForArticles() {
 
 // Observe for dynamic changes in the DOM (e.g. add or remove nodes)
 function observeMutations() {
+  const observerSetup = {
+    childList: true,
+    subtree: true,
+    characterData: true,
+    attributes: true, // Observe attribute changes (React/Next.js can modify them)
+  };
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       // Check added nodes for articles
@@ -128,11 +148,7 @@ function observeMutations() {
   });
 
   // Start observing the body for changes
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-    attributes: true, // Observe attribute changes (React/Next.js can modify them)
-  });
+  observer.observe(document.body, observerSetup);
 }
 
 // Find all article tags and run processArticle

@@ -27,7 +27,7 @@
   ],
   "browser_specific_settings": {
     "gecko": {
-      "id": "addon@example.com",
+      "id": "buchner.patrick@gmx.at",
       "strict_min_version": "113.0"
     },
     "gecko_android": {

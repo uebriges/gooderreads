@@ -78,7 +78,10 @@ function removePercentageFromRatingFilter() {
   const labelsList = document.querySelectorAll(".RatingsHistogram__labelTotal");
   const regex = /^(\d[\d,]*)(?:\s*\(.*?\))?$/;
   labelsList.forEach((label) => {
-    label.innerHTML = label.innerHTML.match(regex)[1];
+    const numberOfReviews = label.innerHTML.match(regex)[1];
+    if (numberOfReviews) {
+      label.textContent = numberOfReviews;
+    }
   });
 }
 

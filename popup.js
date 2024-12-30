@@ -9,9 +9,9 @@ chrome.storage.local.get(storageKey3StarReviews, (result) => {
   if (result.show3StarReviews === undefined) {
     setButtonCaption(false, buttonCaptionShow);
   } else if (result.show3StarReviews === true) {
-    button.innerHTML = buttonCaptionHide;
+    button.textContent = buttonCaptionHide;
   } else {
-    button.innerHTML = buttonCaptionShow;
+    button.textContent = buttonCaptionShow;
   }
 });
 
@@ -42,7 +42,7 @@ function setButtonCaption(value, caption) {
     if (chrome.runtime.lastError) {
       console.error("Error:", chrome.runtime.lastError);
     } else {
-      button.innerHTML = caption;
+      button.textContent = caption;
     }
   });
 }

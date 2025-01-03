@@ -10,6 +10,6 @@ Firefox and Chrome extension for
 
 <p>goodreads.com</p>
 
-Don't let bad reviews rain on your parade. This extension hides all 1, 2, and 3 star reviews, and the average rating. This let's authors focus on what readers love, and what they love to do: write. Designed by the spouse of an author, for the peace of mind of writers everywhere.
+Don't let bad reviews rain on your parade. This extension hides all 1, 2, and 3 star reviews, and the average rating. This lets authors focus on what readers love, and what they love to do: write. Designed by the spouse of an author, for the peace of mind of writers everywhere.
 
 </div>

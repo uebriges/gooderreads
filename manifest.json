@@ -17,7 +17,14 @@
     }
   ],
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "sources/gooderreads_logo_16.png",
+      "32": "sources/gooderreads_logo_32.png",
+      "48": "sources/gooderreads_logo_48.png",
+      "96": "sources/gooderreads_logo_96.png",
+      "128": "sources/gooderreads_logo_128.png"
+    }
   },
   "icons": {
     "16": "sources/gooderreads_logo_16.png",

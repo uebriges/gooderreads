@@ -1,7 +1,7 @@
 <div style="text-align: center;">
 <h1>Gooderreads</h1>
 
-![Gooderreads logo: A closed book with a smily face and a start on it](https://file%2B.vscode-resource.vscode-cdn.net/Users/pb/workspace/playground/goodreads_firefox/sources/gooderreads_logo_128.png?version%3D1735888644566)
+![Gooderreads logo: A closed book with a smily face and a start on it](gooderreads_logo_128.png)
 
 Firefox and Chrome extension for
 
